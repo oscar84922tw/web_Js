@@ -5,24 +5,13 @@ var city = "Taipei";
 var cities = ["Taipei ", "New Taipei ", "Taichung ", "Tainan ", "Kaohsiung ", "Keelung", "Taoyuan City ", "Hsinchu City ", "Hsinchu County ", "Miaoli County ", "Changhua County ", "Nantou County ", "Yunlin County ", "Chiayi City ", "Chiayi County ", "Pingtung County ", "Yilan County ", "Hualien County ", "Taitung ", "Penghu ", "Kinmen County", "Matsu"];
 
 
-
-
-$(document).ready(function() {
-for (var i = 0; i < cities.length; i++) {
-    $(".dropdown-menu").append(
-      "<li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">" + cities[i] + "</a></li>"
-    )
-}
-  $('#dropdown li').on('click', function() {
-    city = $(this).text() ;
-  });
-
-  var src = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22" + city + "%20City%2C%20ak%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"
+var getData = function(city) {
+  src = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22" + city + "%20City%2C%20ak%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"
   $.getJSON(src, function(data) {
     console.log(data)
     skycons.set("today", data.query.results.channel.item.condition.text);
-    $(".temperature").append(data.query.results.channel.item.condition.temp)
-    $(".date").append(data.query.results.channel.item.condition.date)
+    $(".temperature").text(data.query.results.channel.item.condition.temp)
+    $(".date").text(data.query.results.channel.item.condition.date)
     for (var i = 0; i < 3; i++) {
       forecast[i] = new Array()
       forecast[i][0] = data.query.results.channel.item.forecast[i + 1].text;
@@ -51,13 +40,18 @@ for (var i = 0; i < cities.length; i++) {
     }
     skycons.play();
   })
+}
 
-  /*
-  Get value from Bootstrap dropdown menu
-  */
-
-
-
-
-
+$(document).ready(function() {
+  for (var i = 0; i < cities.length; i++) {
+    $(".dropdown-menu").append(
+      "<li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">" + cities[i] + "</a></li>"
+    )
+  }
+  getData(city);
+  $('#dropdown li').on('click', function() {
+    city = $(this).text();
+    $(".dropdown-toggle").text(city);
+    getData(city)
+  });
 });
