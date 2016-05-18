@@ -3,7 +3,7 @@ var day = ["day1", "day2", "day3"];
 var skycons = new Skycons();
 var city = "Taipei";
 var cities = ["Taipei ", "New Taipei ", "Taichung ", "Tainan ", "Kaohsiung ", "Keelung", "Taoyuan City ", "Hsinchu City ", "Hsinchu County ", "Miaoli County ", "Changhua County ", "Nantou County ", "Yunlin County ", "Chiayi City ", "Chiayi County ", "Pingtung County ", "Yilan County ", "Hualien County ", "Taitung ", "Penghu ", "Kinmen County", "Matsu"];
-
+var clickC = true;
 var F2C = function(temp) {
     return Math.round((temp - 32) / (9 / 5));
 }
@@ -40,7 +40,9 @@ var getData = function(city) {
         skycons.set("today", chooserIcon(parseInt(today_we)));
         temp = data.query.results.channel.item.condition.temp;
         $(".temperature").text(F2C(temp));
-        $(".dropdown-toggle").append(F2C(temp));
+        if (clickC) {
+            $(".dropdown-toggle").append(F2C(temp));
+        }
         var date = data.query.results.channel.item.condition.date
         $(".date").text(date.slice(4, date.length - 13))
         for (var i = 0; i < 3; i++) {
@@ -61,19 +63,8 @@ var getData = function(city) {
     })
 }
 
-// var data = function(src) {
-//     $.getJSON(src, function(data) {
-//         F2C(data.query.results.channel.item.condition.temp);
-
-//     return this.y.x;
-// }
 
 $(document).ready(function() {
-    for (var i = 0; i < cities.length; i++) {
-        // $(".dropdown-menu").append(
-        //     "<li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">" + cities[i] + "</a></li>"
-        // )
-    }
     getData(city);
 
     function dd(src) {
@@ -83,21 +74,17 @@ $(document).ready(function() {
 
             return temp;
         })
-
-
     }
     $.each(cities, function(i, val) {
         src = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22" + val + "%20City%2C%20ak%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys"
-            // $.getJSON(src, function(data) {
-        $(".dropdown-menu").append("<li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\"><p id = 'temp"+i+"'>" + val + " " + "</p></a></li>")
+        $(".dropdown-menu").append("<li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\"><p id = 'temp" + i + "'>" + val + " " + "</p></a></li>")
 
         $.getJSON(src, function(data) {
-            $("#temp"+i).append(F2C(data.query.results.channel.item.condition.temp))
+            $("#temp" + i).append(F2C(data.query.results.channel.item.condition.temp))
         })
-
-        // })
     });
     $('#dropdown li').on('click', function() {
+        clickC = false;
         console.log("")
         city = $(this).text();
         $(".dropdown-toggle").html(city);
